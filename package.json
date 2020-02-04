@@ -2,7 +2,7 @@
   "name": "binary-search-toolbox",
   "version": "0.0.9",
   "description": "a set of tools for ordering javascript objects",
-  "main": "index.js",
+  "main": "BinarySearchToolbox.js",
   "scripts": {
     "test": "ava"
   },

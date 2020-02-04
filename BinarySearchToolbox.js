@@ -18,10 +18,103 @@
  * @return {Number} The index of the element which defaults to -1 when not found.
  */
 'use strict';
-var BinarySearchUtils = {
+
+function eArr(_object){return Array.isArray(_object) && _object.length === 0}
+function fArr(_object){return Array.isArray(_object) && _object.length > 0}
+function fStr(_entity) {return typeof _entity === 'string' && _entity.length > 0}
+
+function getBoolAttr(_name, _attrs, _doesExist) {
+    let exists = _attrs[_name] !== undefined, rawVal = _attrs[_name], cleanVal = '', ret = false;
+    if (exists) {
+        if (_doesExist === true) {
+            ret = true
+        } else if (isNum(rawVal)) {
+            ret = rawVal!==0
+		} else {
+            cleanVal = uStr(rawVal);
+            ret = cleanVal === 'Y' || cleanVal === 'YES' || cleanVal === 'TRUE'
+        }
+    }
+    return ret
+}
+
+function getProp (_obj, _property, _def){
+   return isObj(_obj, false) ? _obj[_property] !== undefined ? _obj[_property] : _def || '' :  _def || ''
+}
+
+function getStr(_value,_default,_upperCase){
+    return _upperCase===true?uStr(_value,_default):isStr(_value)?_value:(_default||"")
+}
+
+function hasVal(_item, _zeroIsNonValid) {return (_item !== null && _item !== undefined) ||
+    !(_item === 0 && _zeroIsNonValid === true) }
+
+function isArr(_object){return Array.isArray(_object)}
+function isFunc(_entity) {return typeof _entity === 'function'}
+function isNum(_data, _allowUndefinedZero) {
+	let undefZero = (_data === '' || _data === undefined || _data === null) && Number(_data)===0;
+    return !isNaN(Number(_data)) || (undefZero && _allowUndefinedZero===true)
+}
+
+function isObj(_entity, _allowNull) {
+    return typeof _entity === 'object' && (_allowNull===true||_entity!==null)
+}
+
+function isStr(_entity, _allowEmpty) {
+    return typeof _entity === 'string' && (_allowEmpty===true || (_allowEmpty!==true && _entity.length>0))
+}
+function isUndef(_entity) {return _entity === undefined}
+function numCmp(_num1, _num2, _negative, _operator) {
+    let op1 = Number(_num1), op2 = Number(_num2),
+        operator = uStr(_operator,'EQ'),
+        ret = false, negative = _negative === true;
+    switch (operator){
+        case 'GT':
+        case '>':
+            ret = op1 > op2;
+            break;
+        case 'GE':
+        case '>=':
+            ret = op1 >= op2;
+            break;
+        case 'LT':
+        case '<':
+            ret = op1 < op2;
+            break;
+        case 'LE':
+        case '<=':
+            ret = op1 <= op2;
+            break;
+        case 'EQ':
+        case '=':
+        default:
+            ret = op1 === op2;
+            break
+    }
+    return negative?!ret:ret
+}
+function numCnv(_value,_default, _noZero) {
+    return isUndef(_value) || (Number(_value)===0&&_noZero===true || isNaN(Number(_value))) ?
+        (typeof _default==='number'? Number(_default):_default)
+        : Number(_value)
+}
+function sArr(_object, _n){return Array.isArray(_object) && _object.length === _n}
+function toDP(_value, _noRound,_dp) {
+    let res = 0.0, dp=numCnv(_dp,2,true),value=numCnv(_value,0),
+        factor = Math.pow(10,dp), adVal=_noRound===true?0:0.5;
+    if (value !== 0) {
+	    res = Math.floor((value*factor) + adVal)/factor
+    }
+    return res
+}
+function uStr(_value, _default){
+    return isStr(_value)?_value.toUpperCase():(_default||"")
+}
+
+let BinarySearchUtils = {
 	binaryIndexSplice: function (_searchArray, _obj, _keyProp, _action) {
 
-		var res = -1, minIndex = 0,
+		let res = -1, minIndex = 0,
 			maxIndex = _searchArray.length - 1,
 			currentIndex = 0, currentElement = null, sortRes = null,
 			action = isStr(_action) ? _action.toUpperCase() : _action;
@@ -48,7 +141,7 @@ var BinarySearchUtils = {
 				res = currentIndex;
 				switch (action) {
 					case 'D':
-						_searchArray.splice(currentIndex, 1)
+						_searchArray.splice(currentIndex, 1);
 						break;
 					case 'R':
 						_searchArray[currentIndex] = _obj;
@@ -94,11 +187,11 @@ var BinarySearchUtils = {
 	 * @returns {number}
 	 */
 	binarySearch: function (_val, _array, _insert) {
-		var setInsertPoint = _insert === true;
-		var minIndex = 0;
-		var maxIndex = _array.length - 1;
-		var currentIndex = 0;
-		var sortRes = null;
+		let setInsertPoint = _insert === true;
+		let minIndex = 0;
+		let maxIndex = _array.length - 1;
+		let currentIndex = 0;
+		let sortRes = null;
 
 		while (minIndex <= maxIndex) {
 			currentIndex = Math.floor((minIndex + maxIndex) / 2.0);
@@ -122,7 +215,7 @@ var BinarySearchUtils = {
 	 * General binary object search mechanism
 	 *
 	 * @param _obj - The object that is being searched for
-	 * @param _array - The aray to search in
+	 * @param _array - The array to search in
 	 * @param _orderFn - the ordering function to use in the search
 	 * @param _allowDuplicates - Explicit bool value to allow duplicates
 	 * @param _insert - Explicit bool to indicate  that
@@ -131,11 +224,11 @@ var BinarySearchUtils = {
 	 * @returns {number}
 	 */
 	binaryObjectSearch: function (_obj, _array, _orderFn, _allowDuplicates, _insert, _auxSortFn) {
-		var allowDuplicates = _allowDuplicates === true, setInsertPoint = _insert === true,
+		let allowDuplicates = _allowDuplicates === true, setInsertPoint = _insert === true,
 			auxSortFn = (allowDuplicates && typeof _auxSortFn == 'function') ? _auxSortFn : null,
 			minIndex = 0, maxIndex = _array.length - 1, currentIndex = 0, sortRes = null;
 
-		if (_array.length == 0) return setInsertPoint ? 0 : -1
+		if (_array.length === 0) return setInsertPoint ? 0 : -1;
 		else {
 			if (_orderFn(_array[0], _obj) > 0) {
 				return setInsertPoint ? 0 : -1;												//!!
@@ -152,13 +245,13 @@ var BinarySearchUtils = {
 			if (sortRes < 0) {		// b after a							//!!
 				minIndex = currentIndex + 1;
 				if (minIndex > maxIndex) {
-					if (setInsertPoint) currentIndex = minIndex
+					if (setInsertPoint) currentIndex = minIndex;
 					else currentIndex = -1
 				}
 			} else if (sortRes > 0) {		// b before a						//!!
 				maxIndex = currentIndex - 1;
 				if (minIndex > maxIndex) {
-					if (setInsertPoint) currentIndex = minIndex
+					if (setInsertPoint) currentIndex = minIndex;
 					else currentIndex = -1
 				}
 			} else {
@@ -167,27 +260,27 @@ var BinarySearchUtils = {
 					if (setInsertPoint) {
 						if (auxSortFn) { // auxSortFn is used to find the correct insertion point
 							// Locate the first duplicate in the array.
-							while (currentIndex > 0 && (_orderFn(_array[currentIndex - 1], _obj) == 0))
+							while (currentIndex > 0 && (_orderFn(_array[currentIndex - 1], _obj) === 0))
 								currentIndex--;
 							// More forward through the array whilst keeping the main sort test as 0,
 							// use the aux sort to find the correct place
 							while (currentIndex <= maxIndex &&
-							_orderFn(_array[currentIndex], _obj) == 0 &&
+							_orderFn(_array[currentIndex], _obj) === 0 &&
 							auxSortFn(_array[currentIndex], _obj) < 0)						//!!
 								currentIndex++;
 						} else { // Find the last duplicate so the new one can be added to the end
-							while (currentIndex <= maxIndex && (_orderFn(_array[currentIndex], _obj) == 0))
+							while (currentIndex <= maxIndex && (_orderFn(_array[currentIndex], _obj) === 0))
 								currentIndex++;
 						}
 					} else {
 						// Locate the first duplicate in the array.
-						while (currentIndex > 0 && (_orderFn(_array[currentIndex - 1], _obj) == 0))
+						while (currentIndex > 0 && (_orderFn(_array[currentIndex - 1], _obj) === 0))
 							currentIndex--;
 						if (auxSortFn) {
-							while (currentIndex < maxIndex && _orderFn(_array[currentIndex + 1], _obj) == 0) {
-								var auxSortVal = auxSortFn(_array[currentIndex], _obj);
+							while (currentIndex < maxIndex && _orderFn(_array[currentIndex + 1], _obj) === 0) {
+								let auxSortVal = auxSortFn(_array[currentIndex], _obj);
 								if (auxSortVal < 0) currentIndex++;						//!!
-								else if (auxSortVal == 0) {
+								else if (auxSortVal === 0) {
 									break;
 								} else return -1;		// Not located
 							}
@@ -209,8 +302,8 @@ var BinarySearchUtils = {
 	 * @returns {Array}
 	 */
 	orderObjects: function (_array, _orderFn, _allowDuplicates, _auxSortFn) {
-		var tmpArray = [], insIdx = -1;
-		for (var i = 0; i < _array.length; i++) {
+		let tmpArray = [], insIdx = -1;
+		for (let i = 0; i < _array.length; i++) {
 			insIdx = this.binaryObjectSearch(_array[i], tmpArray, _orderFn, _allowDuplicates, true, _auxSortFn);
 			tmpArray.splice(insIdx, 0, _array[i]);
 		}
@@ -223,13 +316,15 @@ var BinarySearchUtils = {
 	 * @returns {Array}
 	 */
 	orderValues: function (_array) {
-		var tmpArray = [], insIdx = -1;
-		for (var i = 0; i < _array.length; i++) {
+		let tmpArray = [], insIdx = -1;
+		for (let i = 0; i < _array.length; i++) {
 			insIdx = this.binarySearch(_array[i], tmpArray, true);
 			tmpArray.splice(insIdx, 0, _array[i]);
 		}
 		return tmpArray;
 	}
-}
+};
 
+
+module.exports = BinarySearchUtils;
 
