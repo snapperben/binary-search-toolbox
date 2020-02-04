@@ -1,0 +1,19 @@
+{
+  "name": "binary-search-toolbox",
+  "version": "0.0.9",
+  "description": "a set of tools for ordering javascript objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snapperben/binary-search-toolbox.git"
+  },
+  "author": "Snapperben",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/snapperben/binary-search-toolbox/issues"
+  },
+  "homepage": "https://github.com/snapperben/binary-search-toolbox#readme"
+}
