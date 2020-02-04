@@ -325,6 +325,41 @@ let BinarySearchUtils = {
 	}
 };
 
+let SearchToolbox = function(_searchProperty) {
+	let managedArray = [],
+		sortProperty = _searchProperty || 'id',
+		toolBox = BinarySearchUtils;
+	return {
+		add: function (_itemToInsert) {
+			toolBox.binaryIndexSplice(managedArray, _itemToInsert, sortProperty, 'I');
+		},
+		deleteObject: function (_object) {
+		},
+		deleteValue: function (_propertyValue) {
+		},
+		findByValue: function () {},
+		findObject: function () {},
+		get: function(_index){
+			return managedArray[_index]
+		},
+		getSortProp: function(_index){
+			return managedArray[_index][sortProperty]
+		},
+		length: function(){
+			return managedArray.length
+		},
+		reset: function (_array, _property) {
+			let newArray = _array || [],
+				newProperty = _property || this.sortProperty;
+			this.setup(newArray, newProperty);
+		},
+		setup: function (_array, _property) {
+			managedArray = _array;
+			sortProperty = _property || sortProperty;
+		}
+	}
+};
 
-module.exports = BinarySearchUtils;
+exports.Toolbox = SearchToolbox;
+exports.searchUtils = BinarySearchUtils;
 
