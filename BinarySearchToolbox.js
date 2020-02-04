@@ -333,12 +333,12 @@ let SearchToolbox = function(_searchProperty) {
 		add: function (_itemToInsert) {
 			toolBox.binaryIndexSplice(managedArray, _itemToInsert, sortProperty, 'I');
 		},
-		deleteObject: function (_object) {
+		deleteObject: function (_objectToDelete) {
+			return toolBox.binaryIndexSplice(managedArray, _objectToDelete, sortProperty, 'D');
 		},
-		deleteValue: function (_propertyValue) {
+		findObject: function (_objectToFind) {
+			return toolBox.binaryIndexSplice(managedArray, _objectToFind, sortProperty, 'F');
 		},
-		findByValue: function () {},
-		findObject: function () {},
 		get: function(_index){
 			return managedArray[_index]
 		},
@@ -347,6 +347,9 @@ let SearchToolbox = function(_searchProperty) {
 		},
 		length: function(){
 			return managedArray.length
+		},
+		replaceObject: function (_objectToReplaceWith) {
+			return toolBox.binaryIndexSplice(managedArray, _objectToReplaceWith, sortProperty, 'R');
 		},
 		reset: function (_array, _property) {
 			let newArray = _array || [],

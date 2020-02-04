@@ -1,5 +1,5 @@
 const test = require('ava');
-const binarySearch = require('./BinarySearchToolbox');
+const binarySearch = require('../BinarySearchToolbox');
 
 test('Sort basic numeric array', t => {
     let arr = [1,8,4], sortedArray = [1,4,8];
@@ -34,19 +34,4 @@ test('Add objects to array by name', async t => {
     t.truthy(arr[0].name === 'Bob');
     t.truthy(arr[1].name === 'Dave');
     t.truthy(arr[2].name === 'Ruth');
-});
-
-test('Use search', async t => {
-    let managedArray = new binarySearch.Toolbox('name'),
-        bob = {id:1,name:'Bob'},
-        dave = {id:6,name:'Dave'},
-        ruth = {id:2,name:'Ruth'};
-    managedArray.add(ruth);
-    managedArray.add(bob);
-    managedArray.add(dave);
-
-    t.truthy(managedArray.length()  === 3);
-    t.truthy(managedArray.getSortProp(0) === 'Bob');
-    t.truthy(managedArray.getSortProp(1) === 'Dave');
-    t.truthy(managedArray.getSortProp(2) === 'Ruth');
 });
