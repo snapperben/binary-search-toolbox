@@ -16,6 +16,7 @@
  *
  * @param {*} searchElement The item to search for within the array.
  * @return {Number} The index of the element which defaults to -1 when not found.
+ *
  */
 'use strict';
 define([], function () {
