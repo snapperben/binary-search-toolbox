@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/snapperben/binary-search-toolbox/issues"
   },
-  "homepage": "https://github.com/snapperben/binary-search-toolbox#readme"
+  "homepage": "https://github.com/snapperben/binary-search-toolbox#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "ava": "^3.2.0"
+  }
 }
