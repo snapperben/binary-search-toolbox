@@ -1,60 +1,4 @@
-
-/**
- * Base from .... http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/
- *
- * Performs a binary search on the host array. This method can either be
- * injected into Array.prototype or called with a specified scope like this:
- * binaryIndexOf.call(someArray, searchElement);
- *
- * SORT Functions taking a & b
- *  a is in the array. b is the object looking to be found/inserted
- *
- *  res < 0 : b comes after a ==> move search balance point to later in the array
- *  res > 0 : b comes before a ==> move search balance point to earlier in the array
- *  res == 0 : and b are equal
- *
- *
- * @param {*} searchElement The item to search for within the array.
- * @return {Number} The index of the element which defaults to -1 when not found.
- */
 'use strict';
-
-function eArr(_object){return Array.isArray(_object) && _object.length === 0}
-function fArr(_object){return Array.isArray(_object) && _object.length > 0}
-function fStr(_entity) {return typeof _entity === 'string' && _entity.length > 0}
-
-function getBoolAttr(_name, _attrs, _doesExist) {
-    let exists = _attrs[_name] !== undefined, rawVal = _attrs[_name], cleanVal = '', ret = false;
-    if (exists) {
-        if (_doesExist === true) {
-            ret = true
-        } else if (isNum(rawVal)) {
-            ret = rawVal!==0
-		} else {
-            cleanVal = uStr(rawVal);
-            ret = cleanVal === 'Y' || cleanVal === 'YES' || cleanVal === 'TRUE'
-        }
-    }
-    return ret
-}
-
-function getProp (_obj, _property, _def){
-   return isObj(_obj, false) ? _obj[_property] !== undefined ? _obj[_property] : _def || '' :  _def || ''
-}
-
-function getStr(_value,_default,_upperCase){
-    return _upperCase===true?uStr(_value,_default):isStr(_value)?_value:(_default||"")
-}
-
-function hasVal(_item, _zeroIsNonValid) {return (_item !== null && _item !== undefined) ||
-    !(_item === 0 && _zeroIsNonValid === true) }
-
-function isArr(_object){return Array.isArray(_object)}
-function isFunc(_entity) {return typeof _entity === 'function'}
-function isNum(_data, _allowUndefinedZero) {
-	let undefZero = (_data === '' || _data === undefined || _data === null) && Number(_data)===0;
-    return !isNaN(Number(_data)) || (undefZero && _allowUndefinedZero===true)
-}
 
 function isObj(_entity, _allowNull) {
     return typeof _entity === 'object' && (_allowNull===true||_entity!==null)
@@ -98,26 +42,35 @@ function numCnv(_value,_default, _noZero) {
         (typeof _default==='number'? Number(_default):_default)
         : Number(_value)
 }
-function sArr(_object, _n){return Array.isArray(_object) && _object.length === _n}
-function toDP(_value, _noRound,_dp) {
-    let res = 0.0, dp=numCnv(_dp,2,true),value=numCnv(_value,0),
-        factor = Math.pow(10,dp), adVal=_noRound===true?0:0.5;
-    if (value !== 0) {
-	    res = Math.floor((value*factor) + adVal)/factor
-    }
-    return res
-}
 function uStr(_value, _default){
     return isStr(_value)?_value.toUpperCase():(_default||"")
 }
 
+/**
+ * Based on .... http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/
+ *
+ * Performs a binary search on the host array. This method can either be
+ * injected into Array.prototype or called with a specified scope like this:
+ * binaryIndexOf.call(someArray, searchElement);
+ *
+ * SORT Functions taking a & b
+ *  a is in the array. b is the object looking to be found/inserted
+ *
+ *  res < 0 : b comes after a ==> move search balance point to later in the array
+ *  res > 0 : b comes before a ==> move search balance point to earlier in the array
+ *  res == 0 : and b are equal
+ *
+ *
+ * @param {*} searchElement The item to search for within the array.
+ * @return {Number} The index of the element which defaults to -1 when not found.
+ */
 let BinarySearchUtils = {
 	binaryIndexSplice: function (_searchArray, _obj, _keyProp, _action) {
 
 		let res = -1, minIndex = 0,
 			maxIndex = _searchArray.length - 1,
 			currentIndex = 0, currentElement = null, sortRes = null,
-			action = isStr(_action) ? _action.toUpperCase() : _action;
+			action =uStr(_action,'F');
 
 		if (!(action === 'D' || action === 'I' || action === 'R' || action === 'F' || action === 'S'))
 			throw new Error('BinarySearchUtils.binaryIndexSplice::Unrecognized action of :' +
@@ -141,17 +94,19 @@ let BinarySearchUtils = {
 				res = currentIndex;
 				switch (action) {
 					case 'D':
-						_searchArray.splice(currentIndex, 1);
+						res = _searchArray.splice(currentIndex, 1)[0];
 						break;
 					case 'R':
 						_searchArray[currentIndex] = _obj;
 						break;
 					case 'I':
-						// Cannot insert duplicates
-						return -1;
+						res = -1;		// Cannot insert duplicates
 						break;
-					default:
-						// Find, Search....return the located index
+					case 'F':
+						res = _searchArray[currentIndex];		// Return the found object
+						break;
+					case 'S':
+						// return the located index
 						break;
 				}
 				return res;
@@ -165,10 +120,10 @@ let BinarySearchUtils = {
 					break;
 				case 'R':
 				case 'F':
+				case 'S':
 				case 'D':
-					res = -1;
 				default:
-					// Search --- we want to know where it would go if it was inserted
+					res = -1;
 					break;
 			}
 		}
@@ -330,9 +285,6 @@ let SearchToolbox = function(_searchProperty) {
 		sortProperty = _searchProperty || 'id',
 		toolBox = BinarySearchUtils;
 	return {
-		add: function (_itemToInsert) {
-			toolBox.binaryIndexSplice(managedArray, _itemToInsert, sortProperty, 'I');
-		},
 		deleteObject: function (_objectToDelete) {
 			return toolBox.binaryIndexSplice(managedArray, _objectToDelete, sortProperty, 'D');
 		},
@@ -345,6 +297,9 @@ let SearchToolbox = function(_searchProperty) {
 		getSortProp: function(_index){
 			return managedArray[_index][sortProperty]
 		},
+		insert: function (_itemToInsert) {
+			toolBox.binaryIndexSplice(managedArray, _itemToInsert, sortProperty, 'I');
+		},
 		length: function(){
 			return managedArray.length
 		},
@@ -355,6 +310,9 @@ let SearchToolbox = function(_searchProperty) {
 			let newArray = _array || [],
 				newProperty = _property || this.sortProperty;
 			this.setup(newArray, newProperty);
+		},
+		searchObject: function (_objectToSearch) {
+			return toolBox.binaryIndexSplice(managedArray, _objectToSearch, sortProperty, 'S');
 		},
 		setup: function (_array, _property) {
 			managedArray = _array;
