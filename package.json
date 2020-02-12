@@ -2,9 +2,19 @@
   "name": "binary-search-toolbox",
   "version": "0.0.9",
   "description": "a set of tools for ordering javascript objects",
-  "main": "index.js",
+  "main": "BinarySearchToolbox.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "watch-test": "ava --watch"
+  },
+  "ava": {
+    "files": [
+      "tests/basicTests.js",
+      "tests/searchTests.js",
+      "tests/advSearchTests.js"
+    ],
+    "serial": true,
+    "verbose": true
   },
   "repository": {
     "type": "git",
