@@ -58,7 +58,7 @@ function uStr(_value, _default){
  *
  *  res < 0 : b comes after a ==> move search balance point to later in the array
  *  res > 0 : b comes before a ==> move search balance point to earlier in the array
- *  res == 0 : and b are equal
+ *  res == 0 : a and b are equal
  *
  *
  * @param {*} searchElement The item to search for within the array.
@@ -291,16 +291,16 @@ let SearchToolbox = function(_searchProperty) {
 		findObject: function (_objectToFind) {
 			return toolBox.binaryIndexSplice(managedArray, _objectToFind, sortProperty, 'F');
 		},
-		get: function(_index){
+		get: function (_index) {
 			return managedArray[_index]
 		},
-		getSortProp: function(_index){
+		getSortProp: function (_index) {
 			return managedArray[_index][sortProperty]
 		},
 		insert: function (_itemToInsert) {
 			toolBox.binaryIndexSplice(managedArray, _itemToInsert, sortProperty, 'I');
 		},
-		length: function(){
+		length: function () {
 			return managedArray.length
 		},
 		replaceObject: function (_objectToReplaceWith) {
@@ -321,6 +321,45 @@ let SearchToolbox = function(_searchProperty) {
 	}
 };
 
+let AdvancedSearchToolbox = function() {
+	let managedArray = [],
+		toolBox = BinarySearchUtils,
+		orderFn = function(a,b) {return a['name'] < b['name']? -1: a['name'] > b['name'] ? 1 : 0},
+		auxOrderFn = function(a,b){return a['id']-b['id']};
+	return {
+		deleteObject: function (_itemToDelete) {
+			let pos =  toolBox.binaryObjectSearch(_itemToDelete, managedArray, orderFn, true, false, auxOrderFn);
+			//console.log(`Got position :${pos} for object ${_itemToInsert['name']}`);
+			if (pos >= 0 && pos <= managedArray.length) {
+				return managedArray.splice(pos,1)[0]
+			} else {
+				return pos
+			}
+		},
+		dump : function(_asString) {
+			return _asString === true ? JSON.stringify(managedArray):managedArray
+		},
+		findObject: function (_objectToFind) {
+			return toolBox.binaryObjectSearch(_objectToFind, managedArray, orderFn, true, false, auxOrderFn);
+		},
+		get: function (_index) {
+			return managedArray[_index]
+		},
+		insertObject: function (_itemToInsert) {
+			let pos =  toolBox.binaryObjectSearch(_itemToInsert, managedArray, orderFn, true, true, auxOrderFn);
+			//console.log(`Got position :${pos} for object ${_itemToInsert['name']}`);
+			if (pos >= 0 && pos <= managedArray.length) {
+				managedArray.splice(pos,0, _itemToInsert)
+			}
+		},
+		length: function () {
+			return managedArray.length
+		}
+	}
+};
+
 exports.Toolbox = SearchToolbox;
 exports.searchUtils = BinarySearchUtils;
+exports.advToolbox = AdvancedSearchToolbox;
+
 

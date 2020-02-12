@@ -10,7 +10,8 @@
   "ava": {
     "files": [
       "tests/basicTests.js",
-      "tests/searchTests.js"
+      "tests/searchTests.js",
+      "tests/advSearchTests.js"
     ],
     "serial": true,
     "verbose": true
